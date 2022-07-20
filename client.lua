@@ -15,11 +15,12 @@ Citizen.CreateThread(function()
         },
         distance = 1.5,
     })
-    RequestModel(Config.StartingPedsModel)
-    while not HasModelLoaded(Config.StartingPedsModel) do 
-        RequestModel(GetHashKey(Config.StartingPedsModel))
-        Citizen.Wait(1)
-    end
+    -- RequestModel(Config.StartingPedsModel)
+    -- while not HasModelLoaded(Config.StartingPedsModel) do 
+    --     RequestModel(GetHashKey(Config.StartingPedsModel))
+    --     Citizen.Wait(1)
+    -- end
+    loadmodel(Config.StartingPedsModel)
     StartingPed = CreatePed(4, GetHashKey(Config.StartingPedsModel), Config.StartingPedLocation, Config.StartingPedLocationHeading, 0, 0)
     FreezeEntityPosition(StartingPed, true)
     TaskSetBlockingOfNonTemporaryEvents(StartingPed, true)
@@ -97,12 +98,13 @@ function loadAnimDict(dict)
     end
 end
 
-function LoadPropDict(model)
+function loadmodel(model)
+    RequestModel(GetHashKey(model))
     while not HasModelLoaded(GetHashKey(model)) do
-      RequestModel(GetHashKey(model))
-      Wait(10)
+        RequestModel(GetHashKey(model))
+        Citizen.Wait(5)
     end
-end
+end 
 
 function HackingSuccess(success)
     local playerped = PlayerPedId()
@@ -170,6 +172,23 @@ function pedsabillities(securitypedss)
     print("Ped Spawned With Abillites: "..securitypedss)
 end 
 
+function pedabillitiesdriveby(drivebypeds)
+    AddRelationshipGroup("DrugLords")
+    SetPedRelationshipGroupHash(drivebypeds, GetHashKey("DrugLords"))
+    SetPedCombatAttributes(drivebypeds, 1, 1)
+    SetPedCombatAttributes(drivebypeds, 2, 1)
+    SetPedCombatAttributes(drivebypeds, 3, 0)
+    SetPedCombatAttributes(drivebypeds, 292, 0)
+    SetPedCombatAttributes(drivebypeds, 46, 1)
+    SetPedCombatAttributes(drivebypeds, 52, 1)
+    SetPedCombatAttributes(drivebypeds, 1424, 1)
+    SetPedSuffersCriticalHits(drivebypeds, 0)
+    SetPedMaxHealth(drivebypeds, 300)
+    SetEntityHealth(drivebypeds, 300)
+    SetPedArmour(drivebypeds, 100)
+    SetPedDropsWeaponsWhenDead(drivebypeds, 0)
+end
+
 function dropofflocationselc()
     randomdropoff = math.random(1,#Config.DropOffLocation)
     print(randomdropoff)
@@ -229,16 +248,18 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1000)
         if drugrunsloop then 
-            RequestModel(GetHashKey(Config.DrugRunVehicle))
-            while not HasModelLoaded(GetHashKey(Config.DrugRunVehicle)) do
-                RequestModel(GetHashKey(Config.DrugRunVehicle))
-                Citizen.Wait(5)
-            end
-            RequestModel(Config.PedsModel)
-            while not HasModelLoaded(Config.PedsModel) do 
-                RequestModel(GetHashKey(Config.PedsModel))
-                Citizen.Wait(5)
-            end
+            -- RequestModel(GetHashKey(Config.DrugRunVehicle))
+            -- while not HasModelLoaded(GetHashKey(Config.DrugRunVehicle)) do
+            --     RequestModel(GetHashKey(Config.DrugRunVehicle))
+            --     Citizen.Wait(5)
+            -- end
+            -- RequestModel(Config.PedsModel)
+            -- while not HasModelLoaded(Config.PedsModel) do 
+            --     RequestModel(GetHashKey(Config.PedsModel))
+            --     Citizen.Wait(5)
+            -- end
+            loadmodel(Config.DrugRunVehicle)
+            loadmodel(Config.PedsModel)
             if not pressed and drugrunongoing then 
                 if not drugrunvehiclealreayspawned then
                     drugrunvehiclealreayspawned = true 
@@ -318,7 +339,7 @@ Citizen.CreateThread(function()
                         })
                         Citizen.Wait(2000)
                         TriggerEvent("mhacking:show")
-                        TriggerEvent("mhacking:start", math.random(6, 7), math.random(12, 15), HackingSuccess)
+                        TriggerEvent("mhacking:start", Config.HackingWordLimit, Config.HackingTimeLimit, HackingSuccess)
                         if DoesBlipExist(dropoutblip) then 
                             RemoveBlip(dropoutblip)
                         end 
@@ -336,7 +357,7 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(1000)
+        Citizen.Wait(500)
         if succesachieved then 
             if enginedisabled and hacksuccess then 
                 FreezeEntityPosition(vehicledrugrun, 1)
@@ -404,8 +425,39 @@ end)
 
 RegisterNetEvent("fubuki:drugruns:takerewards")
 AddEventHandler("fubuki:drugruns:takerewards", function()
+    -- RequestModel(GetHashKey("moonbeam2"))
+    -- while not HasModelLoaded(GetHashKey("moonbeam2")) do
+    --     RequestModel(GetHashKey("moonbeam2"))
+    --     Citizen.Wait(5)
+    -- end
+    -- RequestModel("csb_jackhowitzer")
+    -- while not HasModelLoaded("csb_jackhowitzer") do 
+    --     RequestModel(GetHashKey("csb_jackhowitzer"))
+    --     Citizen.Wait(5)
+    -- end
+    -- RequestModel("csb_undercover")
+    -- while not HasModelLoaded("csb_undercover") do 
+    --     RequestModel(GetHashKey("csb_undercover"))
+    --     Citizen.Wait(5)
+    -- end
+    -- RequestModel("ig_maude")
+    -- while not HasModelLoaded("ig_maude") do 
+    --     RequestModel(GetHashKey("ig_maude"))
+    --     Citizen.Wait(5)
+    -- end
+    -- RequestModel("u_m_y_dancerave_01")
+    -- while not HasModelLoaded("u_m_y_dancerave_01") do 
+    --     RequestModel(GetHashKey("u_m_y_dancerave_01"))
+    --     Citizen.Wait(5)
+    -- end
+    loadmodel("moonbeam2")
+    loadmodel("csb_jackhowitzer")
+    loadmodel("csb_undercover")
+    loadmodel("ig_maude")
+    loadmodel("u_m_y_dancerave_01")
     local playerped = PlayerPedId()
     if not alreadylootedv2 then 
+        drivebyvehcomingchance = math.random(1, 6)
         SetVehicleDoorOpen(vehicleInMarker, 5, 1)
         disableshooting = false 
         dropruns = false 
@@ -429,6 +481,39 @@ AddEventHandler("fubuki:drugruns:takerewards", function()
         drugrunongoing = true
     else 
         QBCore.Functions.Notify((Config.Notify[9].notfication), "error")
+    end 
+    if Config.DrivebyVeh == "everytime" then 
+        Drivebyvehicle = CreateVehicle(GetHashKey("moonbeam2"), Config.DropOffLocation[randomdropoff].coords, 1, 1)
+        DrivebyPed1 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_jackhowitzer"), -1, 1, 1)
+        DrivebyPed2 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_undercover"), 0, 1, 1)
+        DrivebyPed3 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("ig_maude"), 1, 1, 1)
+        DrivebyPed4 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("u_m_y_dancerave_01"), 2, 1, 1)
+        GiveWeaponToPed(DrivebyPed1, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
+        GiveWeaponToPed(DrivebyPed2, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
+        GiveWeaponToPed(DrivebyPed3, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
+        GiveWeaponToPed(DrivebyPed4, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
+        pedabillitiesdriveby(DrivebyPed1)
+        pedabillitiesdriveby(DrivebyPed2)
+        pedabillitiesdriveby(DrivebyPed3)
+        pedabillitiesdriveby(DrivebyPed4)
+    elseif Config.DrivebyVeh == "none" then 
+        Citizen.Wait(500)
+    elseif Config.DrivebyVeh == "chancebased" then  
+        if drivebyvehcomingchance == 6 then 
+            Drivebyvehicle = CreateVehicle(GetHashKey("moonbeam2"), Config.DropOffLocation[randomdropoff].coords, 1, 1)
+            DrivebyPed1 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_jackhowitzer"), -1, 1, 1)
+            DrivebyPed2 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_undercover"), 0, 1, 1)
+            DrivebyPed3 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("ig_maude"), 1, 1, 1)
+            DrivebyPed4 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("u_m_y_dancerave_01"), 2, 1, 1)
+            GiveWeaponToPed(DrivebyPed1, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
+            GiveWeaponToPed(DrivebyPed2, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
+            GiveWeaponToPed(DrivebyPed3, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
+            GiveWeaponToPed(DrivebyPed4, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
+            pedabillitiesdriveby(DrivebyPed1)
+            pedabillitiesdriveby(DrivebyPed2)
+            pedabillitiesdriveby(DrivebyPed3)
+            pedabillitiesdriveby(DrivebyPed4)
+        end 
     end 
 end)
 
