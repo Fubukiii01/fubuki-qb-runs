@@ -1,7 +1,7 @@
 Config = {}
 Config.StartingLabel = "Looking for Something?"
--- Config.StartingLocation = vector3(-613.8, 324.39, 82.26)
--- Config.StartingLocationHeading = 128.35
+Config.HackingWordLimit = math.random(6, 7)
+Config.HackingTimeLimit = 40
 Config.StartingPedLocation = vector3(-614.2, 324.08, 81.26)
 Config.StartingPedLocationHeading = 317.65
 Config.StartingPedsModel = "ig_g"
@@ -14,6 +14,7 @@ Config.VehiclePickupBlipSprite = 794
 Config.VehiclePickupBlipLabel = "Drug Shipment Located"
 Config.VehicleDropOFFBlipSprite = 569
 Config.VehicleDropOFFBlipLabel = "Drop Off Location"
+Config.DrivebyVeh = "everytime" --"everytime" , "none" , "chancebased"
 Config.Notify = {
     [1] = {
         notfication = "Drug Shipment Located. Check your GPS!"
@@ -52,7 +53,8 @@ Config.Pickuplocations = {
         locgaurd3 = vector3(43.514102935791, -1396.076171875, 33.99658203125),
         locgaurd4 = vector3(86.661148071289, -1436.4396972656, 29.311660766602),
         locgaurd5 = vector3(67.263122558594, -1398.8553466797, 29.362939834595),
-        locgaurd6 = vector3(38.905704498291, -1436.625, 29.742332458496)
+        locgaurd6 = vector3(38.905704498291, -1436.625, 29.742332458496),
+        drivebyvehcoords = vector3()
     },
     [2] = {   
         coords = vector3(242.89, -1764.4, 29.02),
@@ -62,7 +64,8 @@ Config.Pickuplocations = {
         locgaurd3 = vector3(255.09902954102, -1735.5827636719, 33.839042663574),
         locgaurd4 = vector3(258.75494384766, -1785.5721435547, 30.053768157959),
         locgaurd5 = vector3(233.33590698242, -1752.3742675781, 29.007989883423),
-        locgaurd6 = vector3(228.09796142578, -1762.5609130859, 31.345834732056)
+        locgaurd6 = vector3(228.09796142578, -1762.5609130859, 31.345834732056),
+        drivebyvehcoords = vector3()
     },
     [3] = {
         coords = vector3(242.89, -1764.4, 29.02),
@@ -70,7 +73,8 @@ Config.Pickuplocations = {
         locgaurd1 = vector3(1006.0963134766, -50.864524841309, 74.959205627441),
         locgaurd2 = vector3(1017.8698120117, -53.118667602539, 74.959266662598),
         locgaurd3 = vector3(986.177734375, -69.038627624512, 74.959182739258),
-        locgaurd4 = vector3(988.48779296875, -59.015731811523, 75.093421936035)
+        locgaurd4 = vector3(988.48779296875, -59.015731811523, 75.093421936035),
+        drivebyvehcoords = vector3()
     },
     [4] = {
         coords = vector3(1145.9045410156, -475.26983642578, 66.37963104248),
@@ -80,7 +84,8 @@ Config.Pickuplocations = {
         locgaurd3 = vector3(1163.0452880859, -457.74111938477, 71.882957458496),
         locgaurd4 = vector3(1146.9963378906, -453.54049682617, 71.882957458496),
         locgaurd5 = vector3(1209.5334472656, -486.06735229492, 72.110618591309),
-        locgaurd6 = vector3(1201.4742431641, -496.84878540039, 71.864479064941)
+        locgaurd6 = vector3(1201.4742431641, -496.84878540039, 71.864479064941),
+        drivebyvehcoords = vector3()
     },
     [5] = {
         coords = vector3(103.1213684082, 3695.2456054688, 39.710277557373),
@@ -90,7 +95,8 @@ Config.Pickuplocations = {
         locgaurd3 = vector3(127.21990966797, 3714.3544921875, 46.827243804932),
         locgaurd4 = vector3(85.618644714355, 3710.1179199219, 39.747283935547),
         locgaurd5 = vector3(85.153747558594, 3715.1215820313, 43.885692596436),
-        locgaurd6 = vector3(67.69059753418, 3674.9245605469, 39.702827453613)
+        locgaurd6 = vector3(67.69059753418, 3674.9245605469, 39.702827453613),
+        drivebyvehcoords = vector3()
     },
     [6] = {
         coords = vector3(66.372039794922, -1431.0219726563, 29.31166267395),
@@ -100,7 +106,8 @@ Config.Pickuplocations = {
         locgaurd3 = vector3(43.514102935791, -1396.076171875, 33.99658203125),
         locgaurd4 = vector3(86.661148071289, -1436.4396972656, 29.311660766602),
         locgaurd5 = vector3(67.263122558594, -1398.8553466797, 29.362939834595),
-        locgaurd6 = vector3(38.905704498291, -1436.625, 29.742332458496)
+        locgaurd6 = vector3(38.905704498291, -1436.625, 29.742332458496),
+        drivebyvehcoords = vector3()
     },
 }
 Config.RequiredItem = {
