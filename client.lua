@@ -1,7 +1,7 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 playerped = PlayerPedId()
 randomdropoff = math.random(1, #Config.DropOffLocation)
-
+gaurdtodelete = {}
 timeout = false 
 Citizen.CreateThread(function()
     exports['qb-target']:AddTargetModel(Config.StartingPedsModel, {
@@ -15,11 +15,6 @@ Citizen.CreateThread(function()
         },
         distance = 1.5,
     })
-    -- RequestModel(Config.StartingPedsModel)
-    -- while not HasModelLoaded(Config.StartingPedsModel) do 
-    --     RequestModel(GetHashKey(Config.StartingPedsModel))
-    --     Citizen.Wait(1)
-    -- end
     loadmodel(Config.StartingPedsModel)
     StartingPed = CreatePed(4, GetHashKey(Config.StartingPedsModel), Config.StartingPedLocation, Config.StartingPedLocationHeading, 0, 0)
     FreezeEntityPosition(StartingPed, true)
@@ -36,8 +31,18 @@ end
 
 RegisterNetEvent('fubuki:drugruns:beginingofrun')
 AddEventHandler('fubuki:drugruns:beginingofrun', function()
+    playerped = PlayerPedId()
+    loadAnimDict('missfbi3_party_d')
     item1 = QBCore.Functions.HasItem(Config.RequiredItem[1]["item"], 1)
     item2 = QBCore.Functions.HasItem(Config.RequiredItem[2]["item"], 1)
+    QBCore.Functions.Progressbar("talking", ('Nuthin but a G Thang'), 4000, false, true, {
+        disableMovement = true,
+        disableCarMovement = true,
+        disableMouse = false,
+        disableCombat = true,
+    })
+    TaskPlayAnim(playerped, 'missfbi3_party_d', 'stand_talk_loop_a_male1', -8.0, -8.0, 0.0, -1, 0, 1, 1, 1)
+    Citizen.Wait(4000)
     QBCore.Functions.TriggerCallback('fubuki:drugrun:getCops', function(cops)
         if cops >= Config.RequiredCops then
             if item1 and item2 then 
@@ -116,12 +121,12 @@ function HackingSuccess(success)
         exports['qb-core']:HideText()
         QBCore.Functions.Notify((Config.Notify[5].notfication), "success")
         TaskLeaveVehicle(playerped, vehicledrugrun, 4160)
-        DeleteCreatedPed(gaurd1)
-        DeleteCreatedPed(gaurd2)
-        DeleteCreatedPed(gaurd3)
-        DeleteCreatedPed(gaurd4)
-        DeleteCreatedPed(gaurd5)
-        DeleteCreatedPed(gaurd6)
+        for i, v in pairs(gaurdtodelete) do
+            if v ~= nil then
+                DeleteCreatedPed(v)
+            end
+        end
+        gaurdtodelete = {}
     else
 		TriggerEvent('mhacking:hide')
         exports['qb-core']:HideText()
@@ -134,23 +139,15 @@ function HackingSuccess(success)
         DeleteEntity(vehicledrugrun)
         pressed = false 
         enginedisabled = false 
-        DeleteCreatedPed(gaurd1)
-        DeleteCreatedPed(gaurd2)
-        DeleteCreatedPed(gaurd3)
-        DeleteCreatedPed(gaurd4)
-        DeleteCreatedPed(gaurd5)
-        DeleteCreatedPed(gaurd6)
+        for i, v in pairs(gaurdtodelete) do
+            if v ~= nil then
+                DeleteCreatedPed(v)
+            end
+        end
+        gaurdtodelete = {}
 	end
     drugrunsmain = false
 end 
-
-
--- function spawnped(blablapeds, pedx, pedy, pedz)
---     blablapeds = CreatePed(4 , GetHashKey(Config.PedsModel), pedx, pedy, pedz, 0.0, true, true)
---     AddRelationshipGroup("DrugLords")
---     pedsabillities(blablapeds)
---     Citizen.Wait(1000)
--- end 
 
 function pedsabillities(securitypedss)
     SetPedRelationshipGroupHash(securitypedss, GetHashKey("DrugLords"))
@@ -165,7 +162,6 @@ function pedsabillities(securitypedss)
     SetPedMaxHealth(securitypedss, 200)
     SetEntityHealth(securitypedss, 200)
     SetPedArmour(securitypedss, 100)
-    -- SetPedAsCop(securitypedss)
     SetPedCombatAttributes(securitypedss, 1424, true) 
     SetPedCombatAttributes(securitypedss, 5, true) 
     SetPedCombatAttributes(securitypedss, 46, true) 
@@ -175,10 +171,14 @@ end
 function pedabillitiesdriveby(drivebypeds)
     AddRelationshipGroup("DrugLords")
     SetPedRelationshipGroupHash(drivebypeds, GetHashKey("DrugLords"))
+    SetRelationshipBetweenGroups(5, GetHashKey("DrugLords"), GetHashKey("PLAYER"))
+    SetPedFleeAttributes(drivebypeds, 0, true)
+    SetPedCombatRange(drivebypeds, 2)
+    SetPedCombatMovement(drivebypeds, 3)
     SetPedCombatAttributes(drivebypeds, 1, 1)
     SetPedCombatAttributes(drivebypeds, 2, 1)
-    SetPedCombatAttributes(drivebypeds, 3, 0)
-    SetPedCombatAttributes(drivebypeds, 292, 0)
+   ---- SetPedCombatAttributes(drivebypeds, 3, 0)
+    --SetPedCombatAttributes(drivebypeds, 292, 0)
     SetPedCombatAttributes(drivebypeds, 46, 1)
     SetPedCombatAttributes(drivebypeds, 52, 1)
     SetPedCombatAttributes(drivebypeds, 1424, 1)
@@ -248,16 +248,6 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1000)
         if drugrunsloop then 
-            -- RequestModel(GetHashKey(Config.DrugRunVehicle))
-            -- while not HasModelLoaded(GetHashKey(Config.DrugRunVehicle)) do
-            --     RequestModel(GetHashKey(Config.DrugRunVehicle))
-            --     Citizen.Wait(5)
-            -- end
-            -- RequestModel(Config.PedsModel)
-            -- while not HasModelLoaded(Config.PedsModel) do 
-            --     RequestModel(GetHashKey(Config.PedsModel))
-            --     Citizen.Wait(5)
-            -- end
             loadmodel(Config.DrugRunVehicle)
             loadmodel(Config.PedsModel)
             if not pressed and drugrunongoing then 
@@ -269,19 +259,14 @@ Citizen.CreateThread(function()
                 end 
                 if not pedsalreadyspawned then 
                     pedsalreadyspawned = true
-                    gaurd1 = CreatePed(4 , GetHashKey(Config.PedsModel), Config.Pickuplocations[rabdomloc].locgaurd1, 0.0, true, true)
-                    gaurd2 = CreatePed(4 , GetHashKey(Config.PedsModel), Config.Pickuplocations[rabdomloc].locgaurd2, 0.0, true, true)
-                    gaurd3 = CreatePed(4 , GetHashKey(Config.PedsModel), Config.Pickuplocations[rabdomloc].locgaurd3, 0.0, true, true)
-                    gaurd4 = CreatePed(4 , GetHashKey(Config.PedsModel), Config.Pickuplocations[rabdomloc].locgaurd4, 0.0, true, true)
-                    gaurd5 = CreatePed(4 , GetHashKey(Config.PedsModel), Config.Pickuplocations[rabdomloc].locgaurd5, 0.0, true, true)
-                    gaurd6 = CreatePed(4 , GetHashKey(Config.PedsModel), Config.Pickuplocations[rabdomloc].locgaurd6, 0.0, true, true)
-                    AddRelationshipGroup("DrugLords")
-                    pedsabillities(gaurd1)
-                    pedsabillities(gaurd2)
-                    pedsabillities(gaurd3)
-                    pedsabillities(gaurd4)
-                    pedsabillities(gaurd5)
-                    pedsabillities(gaurd6)
+                    for i, v in pairs(Config.Pickuplocations[rabdomloc].gaurdspawnpoints) do
+                        local gaurd = CreatePed(28, GetHashKey(Config.PedsModel), v.x, v.y, v.z - 1, 0.0, true, true)
+                        SetEntityHeading(gaurd, v.w)
+                        AddRelationshipGroup("DrugLords")
+                        pedsabillities(gaurd)
+                        table.insert(gaurdtodelete, gaurd)
+                        print("pedspawned")
+                    end
                 end  
                 pressed = true
                 drugrunongoing = false 
@@ -405,7 +390,7 @@ AddEventHandler("fubuki:drugruns:reciveitem", function()
             disableMouse = false,
             disableCombat = true,
         })
-        TaskPlayAnim(playerped, "veh@break_in@0h@p_m_one@", "low_force_entry_ds", 8.0, -8, -1, 0, 0, 0, 0, 0)
+        TaskPlayAnim(playerped, "veh@break_in@0h@p_m_one@", "low_force_entry_ds",  1.5, -1.5, -1, 0, 0, 0, 0, 0)
         Citizen.Wait(3000)
         SetVehicleDoorOpen(vehicledrugrun, 2, false)
         SetVehicleDoorOpen(vehicledrugrun, 3, false)
@@ -425,53 +410,27 @@ end)
 
 RegisterNetEvent("fubuki:drugruns:takerewards")
 AddEventHandler("fubuki:drugruns:takerewards", function()
-    -- RequestModel(GetHashKey("moonbeam2"))
-    -- while not HasModelLoaded(GetHashKey("moonbeam2")) do
-    --     RequestModel(GetHashKey("moonbeam2"))
-    --     Citizen.Wait(5)
-    -- end
-    -- RequestModel("csb_jackhowitzer")
-    -- while not HasModelLoaded("csb_jackhowitzer") do 
-    --     RequestModel(GetHashKey("csb_jackhowitzer"))
-    --     Citizen.Wait(5)
-    -- end
-    -- RequestModel("csb_undercover")
-    -- while not HasModelLoaded("csb_undercover") do 
-    --     RequestModel(GetHashKey("csb_undercover"))
-    --     Citizen.Wait(5)
-    -- end
-    -- RequestModel("ig_maude")
-    -- while not HasModelLoaded("ig_maude") do 
-    --     RequestModel(GetHashKey("ig_maude"))
-    --     Citizen.Wait(5)
-    -- end
-    -- RequestModel("u_m_y_dancerave_01")
-    -- while not HasModelLoaded("u_m_y_dancerave_01") do 
-    --     RequestModel(GetHashKey("u_m_y_dancerave_01"))
-    --     Citizen.Wait(5)
-    -- end
-    loadmodel("moonbeam2")
-    loadmodel("csb_jackhowitzer")
-    loadmodel("csb_undercover")
-    loadmodel("ig_maude")
-    loadmodel("u_m_y_dancerave_01")
     local playerped = PlayerPedId()
     if not alreadylootedv2 then 
         drivebyvehcomingchance = math.random(1, 6)
-        SetVehicleDoorOpen(vehicleInMarker, 5, 1)
+        itemnumber = math.random(1, #Config.Items)
+        amount = math.random(Config.Items[itemnumber]["amount"]["min"], Config.Items[itemnumber]["amount"]["max"])
         disableshooting = false 
         dropruns = false 
         alreadylootedv2 = true 
+        SetVehicleDoorOpen(vehicleInMarker, 5, 1)
         exports("RemoveTargetModel", vehicleInMarker)
         TriggerEvent('animations:client:EmoteCommandStart', {"c"})
         Citizen.InvokeNative(0xAE3CBE5BF394C9C9 , Citizen.PointerValueIntInitialized(GetHashKey("hei_prop_heist_box")))
         TaskPlayAnim(playerped, "mini@repair", "fixing_a_player", 1.5, -1.5, -1, 0, 0, 0, 0, 0)
         Citizen.Wait(2000)
         ClearPedTasksImmediately(playerped)
-        itemnumber = math.random(1, #Config.Items)
-        amount = math.random(Config.Items[itemnumber]["amount"]["min"], Config.Items[itemnumber]["amount"]["max"])
         TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.Items[itemnumber]["item"]], "add")
         TriggerServerEvent('QBCore:Server:AddItem', Config.Items[itemnumber]["item"], amount)
+        if Config.Money == true then 
+            TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items['markedbills'], "add")
+            TriggerServerEvent('QBCore:Server:AddItem', 'markedbills', Config.MoneyAmount)
+        end 
         QBCore.Functions.Notify((Config.Notify[8].notfication), "success")
         Citizen.Wait(30000)
         SetEntityAsNoLongerNeeded(vehicledrugrun)
@@ -481,39 +440,6 @@ AddEventHandler("fubuki:drugruns:takerewards", function()
         drugrunongoing = true
     else 
         QBCore.Functions.Notify((Config.Notify[9].notfication), "error")
-    end 
-    if Config.DrivebyVeh == "everytime" then 
-        Drivebyvehicle = CreateVehicle(GetHashKey("moonbeam2"), Config.DropOffLocation[randomdropoff].coords, 1, 1)
-        DrivebyPed1 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_jackhowitzer"), -1, 1, 1)
-        DrivebyPed2 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_undercover"), 0, 1, 1)
-        DrivebyPed3 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("ig_maude"), 1, 1, 1)
-        DrivebyPed4 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("u_m_y_dancerave_01"), 2, 1, 1)
-        GiveWeaponToPed(DrivebyPed1, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
-        GiveWeaponToPed(DrivebyPed2, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
-        GiveWeaponToPed(DrivebyPed3, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
-        GiveWeaponToPed(DrivebyPed4, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
-        pedabillitiesdriveby(DrivebyPed1)
-        pedabillitiesdriveby(DrivebyPed2)
-        pedabillitiesdriveby(DrivebyPed3)
-        pedabillitiesdriveby(DrivebyPed4)
-    elseif Config.DrivebyVeh == "none" then 
-        Citizen.Wait(500)
-    elseif Config.DrivebyVeh == "chancebased" then  
-        if drivebyvehcomingchance == 6 then 
-            Drivebyvehicle = CreateVehicle(GetHashKey("moonbeam2"), Config.DropOffLocation[randomdropoff].coords, 1, 1)
-            DrivebyPed1 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_jackhowitzer"), -1, 1, 1)
-            DrivebyPed2 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("csb_undercover"), 0, 1, 1)
-            DrivebyPed3 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("ig_maude"), 1, 1, 1)
-            DrivebyPed4 = CreatePedInsideVehicle(Drivebyvehicle, 4, GetHashKey("u_m_y_dancerave_01"), 2, 1, 1)
-            GiveWeaponToPed(DrivebyPed1, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
-            GiveWeaponToPed(DrivebyPed2, GetHashKey("weapon_heavypistol"), 9999, 0, 1)
-            GiveWeaponToPed(DrivebyPed3, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
-            GiveWeaponToPed(DrivebyPed4, GetHashKey("weapon_carbinerifle_mk2"), 9999, 0, 1)
-            pedabillitiesdriveby(DrivebyPed1)
-            pedabillitiesdriveby(DrivebyPed2)
-            pedabillitiesdriveby(DrivebyPed3)
-            pedabillitiesdriveby(DrivebyPed4)
-        end 
     end 
 end)
 
@@ -541,6 +467,7 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
 
 
 
