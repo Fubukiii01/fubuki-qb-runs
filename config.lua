@@ -90,8 +90,12 @@ Config.RequiredItem = {
         ["item"] = "trojan_usb"
     },
 }
-Config.Money = true 
-Config.MoneyAmount = math.random(1,4)
+
+Config.MoneyRelated = {
+    EnableMoneyDrops = true 
+    MoneyBagAmount =  math.random(1,4)
+} 
+
 Config.Items = {
     [1] = {
         ["item"] = "weed_brick",
@@ -115,9 +119,21 @@ Config.Items = {
         },
     },
 }
+
+Config.DriveByConfiguration = {
+    VehicleModel = "stockade",
+    PedsModelDriver = "a_m_m_soucent_03",
+    PedsModelPassenger = "a_m_y_juggalo_01",
+    PedsModelPassenger3 = "cs_taocheng",
+    PedsModelPassenger4 = "csb_alan",
+    Driver_Passenger_Weapon = "weapon_heavypistol",
+    Passenger3_Passenger4_Weapon = "weapon_carbinerifle_mk2"
+}
+
 Config.DropOffLocation = {
     [1] = {
-        coords = vector3(1189.56, -3105.43, 5.68) -- DOCKS
+        coords = vector3(1189.56, -3105.43, 5.68), -- DOCKS
+        drivebycoords = {vector4(206.1154, -1498.474, 35.82869, 69.98449)}
     },
     [2] = {
         coords = vector3(-1154.94, -2035.35, 13.16) -- Airport Los Santos
@@ -135,4 +151,3 @@ Config.DropOffLocation = {
         coords = vector3(-105.07, 1010.45, 235.76) -- VineWoord Mansion
     },
 }
-
