@@ -246,7 +246,7 @@ Config.DropOffLocation = {
 Config.DiscordLogs = {
     toggle = true, -- To Enable Discord Logs
     color = "2122168", -- Color (By Default: Blue)
-    webhook = "https://discord.com/api/webhooks/944248546255863818/VmYpA28zF1g2B4Z8w1MYYySXZgXf3EkQrlKjt7YL5QhxIhr3BzpOZSiS85XxVrBwsUgt", -- Webhook Must Change
-    communtiylogo = "https://media.discordapp.net/attachments/976560232446709840/988776786835963934/arena_logo.png" -- Must end with .png or .jpg
+    webhook = "", -- Webhook Must Change
+    communtiylogo = "" -- Must end with .png or .jpg
 }
 
